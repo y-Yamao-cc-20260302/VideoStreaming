@@ -1,24 +1,32 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import VideoSection from '../components/video/VideoSection'
+import { videosApi } from '../api/videos'
 import { useAuth } from '../contexts/AuthContext'
+import type { VideoSummary } from '../types'
 
 export default function HomePage() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { isAuthenticated } = useAuth()
+  const [newReleases, setNewReleases] = useState<VideoSummary[]>([])
+  const [popular, setPopular] = useState<VideoSummary[]>([])
+  const [recommended, setRecommended] = useState<VideoSummary[]>([])
+
+  useEffect(() => {
+    videosApi.newReleases().then((r) => setNewReleases(r.data.data)).catch(() => {})
+    videosApi.popular().then((r) => setPopular(r.data.data)).catch(() => {})
+    if (isAuthenticated) {
+      videosApi.recommended().then((r) => setRecommended(r.data.data)).catch(() => {})
+    } else {
+      setRecommended([])
+    }
+  }, [isAuthenticated])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 gap-6">
-      <h1 className="text-2xl font-bold">Sample App</h1>
-      <p className="text-sm text-gray-500">React SPA テンプレートのプレースホルダー画面です。</p>
-
-      {isAuthenticated ? (
-        <div className="text-center space-y-3">
-          <p className="text-sm">ログイン中: {user?.name}（{user?.email}）</p>
-          <button onClick={logout} className="btn-secondary">ログアウト</button>
-        </div>
-      ) : (
-        <div className="flex gap-3">
-          <Link to="/login" className="btn-primary">ログイン</Link>
-          <Link to="/register" className="btn-secondary">新規登録</Link>
-        </div>
+    <div>
+      {isAuthenticated && <VideoSection title="あなたへのおすすめ" videos={recommended} />}
+      <VideoSection title="新着" videos={newReleases} />
+      <VideoSection title="人気（直近 7 日）" videos={popular} />
+      {newReleases.length === 0 && popular.length === 0 && (
+        <p className="text-center text-gray-500 py-12">作品がまだありません</p>
       )}
     </div>
   )

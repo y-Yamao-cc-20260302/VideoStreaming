@@ -41,6 +41,41 @@
               <i class="nav-icon fas fa-tachometer-alt"></i><p>ダッシュボード</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.videos.index') }}" class="nav-link {{ request()->routeIs('admin.videos.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-film"></i><p>動画管理</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-folder"></i><p>カテゴリ</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.genres.index') }}" class="nav-link {{ request()->routeIs('admin.genres.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-tags"></i><p>ジャンル</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.subscription-plans.index') }}" class="nav-link {{ request()->routeIs('admin.subscription-plans.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-yen-sign"></i><p>プラン</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-users"></i><p>会員管理</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.reviews.index') }}" class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-star"></i><p>レビュー</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.notices.index') }}" class="nav-link {{ request()->routeIs('admin.notices.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-bullhorn"></i><p>お知らせ</p>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>

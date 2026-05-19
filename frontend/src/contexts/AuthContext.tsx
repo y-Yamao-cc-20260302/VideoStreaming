@@ -7,8 +7,15 @@ interface AuthContextValue {
   isLoading: boolean
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string, confirmation: string) => Promise<void>
+  register: (payload: {
+    name: string
+    nickname?: string
+    email: string
+    password: string
+    password_confirmation: string
+  }) => Promise<void>
   logout: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -17,34 +24,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const fetchUser = useCallback(async () => {
+    const { data } = await authApi.me()
+    setUser(data)
+  }, [])
+
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     if (!token) {
       setIsLoading(false)
       return
     }
-    authApi
-      .me()
-      .then(({ data }) => setUser(data.data))
+    fetchUser()
       .catch(() => localStorage.removeItem('access_token'))
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [fetchUser])
 
-  const login = useCallback(async (email: string, password: string) => {
-    const { data } = await authApi.login(email, password)
-    localStorage.setItem('access_token', data.access_token)
-    const { data: me } = await authApi.me()
-    setUser(me.data)
-  }, [])
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const { data } = await authApi.login(email, password)
+      localStorage.setItem('access_token', data.access_token)
+      await fetchUser()
+    },
+    [fetchUser]
+  )
 
   const register = useCallback(
-    async (name: string, email: string, password: string, confirmation: string) => {
-      const { data } = await authApi.register(name, email, password, confirmation)
+    async (payload: {
+      name: string
+      nickname?: string
+      email: string
+      password: string
+      password_confirmation: string
+    }) => {
+      const { data } = await authApi.register(payload)
       localStorage.setItem('access_token', data.access_token)
-      const { data: me } = await authApi.me()
-      setUser(me.data)
+      await fetchUser()
     },
-    []
+    [fetchUser]
   )
 
   const logout = useCallback(async () => {
@@ -55,7 +72,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, isAuthenticated: !!user, login, register, logout }}
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        login,
+        register,
+        logout,
+        refreshUser: fetchUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

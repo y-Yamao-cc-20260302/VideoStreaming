@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <Link to="/" className="text-xl font-bold tracking-widest mb-8">Sample App</Link>
+      <Link to="/" className="text-xl font-bold tracking-widest mb-8">動画配信サービス</Link>
       <div className="w-full max-w-sm space-y-6">
         <h1 className="text-xl font-bold text-center">ログイン</h1>
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}

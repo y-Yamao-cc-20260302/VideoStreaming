@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "ojt/template-backend",
+    "name": "ojt/video-streaming-backend",
     "type": "project",
-    "description": "OJT サンプル用テンプレート (Laravel + JWT API + 管理画面 Blade)",
-    "keywords": ["laravel", "template"],
+    "description": "動画配信サービスサイト (Laravel + JWT API + 管理画面 Blade + PostgreSQL)",
+    "keywords": ["laravel", "video-streaming"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

@@ -1,27 +1,28 @@
-# OJT サンプルプロジェクト テンプレート
+# 動画配信サービスサイト
 
-Docker + Laravel (REST API) + React SPA + Laravel Blade (管理画面) のスケルトン。
-新しい OJT 用サンプルを作るたびに、このテンプレートをコピーして開始する。
-
-## 含まれているもの
-
-- Docker Compose 一式（nginx / app(PHP-FPM) / frontend(Node) / db(MySQL)）
-- Laravel スケルトン
-  - JWT 認証 API（`/api/auth/register`, `/login`, `/me`, `/refresh`, `/logout`）
-  - 管理画面セッション認証（`/admin/login`, `/admin/dashboard`）
-- React SPA スケルトン
-  - 認証コンテキスト（localStorage + 自動リフレッシュ）
-  - ログイン/新規登録/ホームのプレースホルダー画面
-- 初期管理者シーダー（admin@example.com / password）
+Docker + Laravel (REST API + 管理画面 Blade) + React SPA + PostgreSQL で構成された動画配信サービスのサンプル実装。
 
 ## 構成早見表
 
 | URL | 内容 |
 |---|---|
-| `http://localhost/` | React SPA |
+| `http://localhost/` | React SPA（一般ユーザー向け） |
 | `http://localhost/admin` | 管理画面（Blade） |
 | `http://localhost/api/...` | REST API（Laravel） |
-| `localhost:3306` | MySQL（TablePlus 等で直接接続） |
+| `localhost:5432` | PostgreSQL（TablePlus / DBeaver 等で直接接続） |
+
+## 技術スタック
+
+| レイヤー | 技術 |
+|---|---|
+| インフラ | Docker / Docker Compose |
+| バックエンド | Laravel 12 (PHP 8.2) |
+| データベース | PostgreSQL 16 |
+| フロント | React 18 + Vite + TypeScript |
+| 管理画面 | Laravel Blade |
+| API 仕様 | OpenAPI |
+| 認証（管理画面） | Laravel セッション認証 |
+| 認証（SPA） | JWT (`tymon/jwt-auth`) |
 
 ---
 
@@ -57,6 +58,7 @@ docker compose up -d
 
 ```bash
 docker compose exec app php artisan migrate --seed
+docker compose exec app php artisan storage:link  # サムネイル画像配信用
 ```
 
 初期管理者アカウント:
@@ -92,16 +94,18 @@ docker compose exec frontend npx tsc --noEmit     # 型チェック
 
 ---
 
-## テンプレートとして使うとき
+## 設計書
 
-1. このディレクトリをコピーして新しいサンプル用ディレクトリにする
-2. 以下を新しいサンプル用の名前に置き換える
-   - `backend/composer.json` の `name`, `description`
-   - `frontend/package.json` の `name`
-   - `frontend/index.html` の `<title>`
-   - `backend/.env.example` の `APP_NAME`, `DB_DATABASE`, `DB_USERNAME`
-   - `docker-compose.yml` の `MYSQL_DATABASE`, `MYSQL_USER`
-3. `docs/` に新規サンプルの設計書を作成してから実装に着手する
+設計書は `docs/` 配下に集約しています。
+
+- [docs/README.md](docs/README.md) — ドキュメント目次
+- [docs/features.md](docs/features.md) — 機能一覧
+- [docs/architecture/overview.md](docs/architecture/overview.md) — システム全体構成
+- [docs/architecture/docker.md](docs/architecture/docker.md) — Docker 構成
+- [docs/database/er.md](docs/database/er.md) / [tables.md](docs/database/tables.md) — DB 設計
+- [docs/api/README.md](docs/api/README.md) / [endpoints.md](docs/api/endpoints.md) — REST API 仕様
+- [docs/frontend/screens.md](docs/frontend/screens.md) — フロント画面設計
+- [docs/admin/screens.md](docs/admin/screens.md) — 管理画面設計
 
 ---
 
