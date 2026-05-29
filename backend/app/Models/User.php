@@ -72,4 +72,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(PaymentHistory::class);
     }
+
+    public function CastFavorites(): HasMany
+    {
+        return $this->hasMany(CastFavorite::class);
+    }
 }

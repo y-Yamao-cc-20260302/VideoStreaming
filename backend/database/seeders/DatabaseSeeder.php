@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             SubscriptionPlanSeeder::class,
             VideoSeeder::class,
             NoticeSeeder::class,
+            OccupationSeeder::class,
+            CastSeeder::class,
         ]);
     }
 }
