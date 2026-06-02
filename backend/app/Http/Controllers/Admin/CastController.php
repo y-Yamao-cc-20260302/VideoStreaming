@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cast;
 use App\Models\Occupation;
 use App\Http\Requests\Admin\Cast\StoreCastRequest;
+use App\Http\Requests\Admin\Cast\UpdateCastRequest;
 
 class CastController extends Controller
 {
@@ -62,62 +63,47 @@ class CastController extends Controller
             $data['picture_path'] = $request->file('picture')->store('picture', 'public');
         }
 
+        // テーブルそのものに命令をしている書き方createなのでエラーなく通る
         Cast::create($data);
 
-        //登録ページ保存押下
-        // $casts = new Cast();
-        // $casts->name = $request->name;
-        // $casts->gender = $request->gender;
-        // $casts->birthday = $request->birthday;
-        // $casts->occupation_id = $request->occupation_id;
-        // $casts->picture_path = $request->picture_path;
-        // $casts->is_publish = $request->is_publish;
-
-        // $casts->save();
         return redirect()->route('admin.casts.index')->with('success','出演者を登録しました');
     }
 
-    public function edit(string $id)
+    public function edit(Cast $cast)
     {
         //出演者編集
-        // $casts = Cast::where('id',$id)->get();
-        // return view('admin.casts.edit',compact('casts'));
+        $occupations = Occupation::get();
+        return view('admin.casts.edit',compact('cast','occupations'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCastRequest $request,Cast $cast)
     {
-        //編集ページ、保存押下 仮実装
-        // $casts = Cast::where('id',$id)->get();
+        $data = $request->safe()->except(('picture'));
 
-        // $casts->name = $request->name;
-        // $casts->gender = $request->gender;
-        // $casts->birthday = $request->birthday;
-        // $casts->occupation_id = $request->occupation_id;
-        // $casts->picture_path = $request->picture_path;
-        // $casts->is_publish = $request->is_publish;
+        if ($request->hasFile('picture')) {
+            $data['picture_path'] = $request->file('picture')->store('picture', 'public');
+        }
 
-        // $casts->save();
-
-        // return view('admin.casts.index');
+        // 一つのデータに対して更新をかける書き方
+        $cast->update($data);
+        return redirect()->route('admin.casts.index')->with('success','出演者を更新しました');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Cast $cast)
     {
         //出演者削除
-        // $casts = Cast::where('id',$id)->get();
-        // $casts->delete();
-        // return view('admin.casts.index');
+        $cast->delete();
+        return redirect()->route('admin.casts.index')->with('success','出演者を削除しました');
     }
 
-    public function publish(string $id)
+    public function publish(Cast $cast)
     {
-        //公開設定押下
-        // return view('casts'); リターンしちゃダメと思う
+
     }
 }

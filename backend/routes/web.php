@@ -52,9 +52,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 出演者編集
         Route::get('casts/{cast}/edit',[CastController::class,'edit'])->name('casts.edit');
         // 編集ページ、保存押下
-        Route::put('casts/{cast}',[CastController::class,'update'])->name('casts.update');
+        Route::patch('casts/{cast}',[CastController::class,'update'])->name('casts.update');
         // 出演者削除
-        Route::get('casts/{cast}',[CastController::class,'destroy'])->name('casts.destroy');
+        Route::delete('casts/{cast}',[CastController::class,'destroy'])->name('casts.destroy');
         // 公開設定押下
         Route::patch('casts/{cast}/publish', [VideoController::class, 'publish'])->name('casts.publish');
 

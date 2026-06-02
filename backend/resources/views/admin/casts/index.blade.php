@@ -46,8 +46,8 @@
             <td>
               <form method="POST" action="{{ route('admin.casts.publish', $cast) }}" class="d-inline">
                 @csrf @method('PATCH')
-                <button class="btn btn-sm {{ $cast->is_published ? 'btn-success' : 'btn-secondary' }}">
-                  {{ $cast->is_published ? '公開中' : '非公開' }}
+                <button class="btn btn-sm {{ $cast->is_publish ? 'btn-success' : 'btn-secondary' }}">
+                  {{ $cast->is_publish ? '公開中' : '非公開' }}
                 </button>
               </form>
             </td>
