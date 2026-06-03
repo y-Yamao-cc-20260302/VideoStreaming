@@ -104,6 +104,10 @@ class CastController extends Controller
 
     public function publish(Cast $cast)
     {
-
+        // booleanを否定のみで更新できる
+        $cast->update(['is_publish'=> ! $cast->is_publish]);
+        //公開設定押下
+        // backで元のページへもどる
+        return back()->with('success',$cast->is_publish ? '公開しました' : '非公開しました');
     }
 }

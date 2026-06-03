@@ -56,7 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 出演者削除
         Route::delete('casts/{cast}',[CastController::class,'destroy'])->name('casts.destroy');
         // 公開設定押下
-        Route::patch('casts/{cast}/publish', [VideoController::class, 'publish'])->name('casts.publish');
+        Route::patch('casts/{cast}/publish', [CastController::class, 'publish'])->name('casts.publish');
 
     });
 });
