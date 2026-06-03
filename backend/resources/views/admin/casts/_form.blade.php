@@ -5,7 +5,7 @@
 
 <div class="form-group">
     <label>名前<span class="text-danger">*</span></label>
-    <input type="text" name="name" class="form-control" value="{{ $cast->name }}">
+    <input type="text" name="name" class="form-control" value="{{ $cast->name ?? ''}}">
 </div>
 <div class="form-row">
     <div class="form-group col-md-6">
@@ -18,7 +18,7 @@
     </div>
     <div class="form-group col-md-6">
         <label>誕生日</label>
-        <input type="date" name="birthday" class="form-control" value="{{ $cast->birthday }}">
+        <input type="date" name="birthday" class="form-control" value="{{ $cast->birthday ?? ''}}">
     </div>
 </div>
 <div class="form-group">

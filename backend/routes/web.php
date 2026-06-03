@@ -46,7 +46,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 出演者一覧表示 (基本はrequest空で遷移してるだけ。)
         Route::get('casts',[CastController::class,'index'])->name('casts.index');
         // 出演者登録
-        Route::get('casts/create',[CastController::class,'create'])->name('casts.create');
+        Route::get('casts/new',[CastController::class,'new'])->name('casts.new');
         // 登録ページ、保存押下
         Route::post('casts',[CastController::class,'store'])->name('casts.store');
         // 出演者編集

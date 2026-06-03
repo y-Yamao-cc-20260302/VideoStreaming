@@ -14,29 +14,39 @@ class CastController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, $Pagenate=20)
     {
         $query = Cast::with(['occupation']);
         //値の変換ができれば、queryに職業idでの検索を追加
-        if ($occupationId = $request->integer('occupation_id')) {
-            $query->where('occupation_id',$occupationId);
+        if($request->integer('occupation_id')){
+            // int型に変換
+            $occupationId = $request->integer('occupation_id');
+            // バリデーションチェックが通れば検索を行う
+            if(is_int($occupationId)){
+                $query->where('occupation_id',$occupationId);
+            } 
         }
 
         // 文字列として受け取り、文字列として判定する
-        $publishFilter = $request->string('publish')->toString();
-        if ($publishFilter === '1') {
-            $query->where('is_publish', true);
-        } elseif ($publishFilter === '0') {
-            $query->where('is_publish', false);
+        if($request->string('publish')->toString()){
+            $publishFilter = $request->string('publish')->toString();
+            if ($publishFilter === '1') {
+                $query->where('is_publish', true);
+            } elseif ($publishFilter === '0') {
+                $query->where('is_publish', false);
+            }
         }
 
         //含む検索 (ilke:あいまい検索)
-        if ($keyword = $request->string('keyword')->toString()) {
-            $like = '%'.$keyword.'%';
-            $query->where(fn ($q) => $q->where('name','ILIKE',$like));
+        if( $request->string('keyword')->toString()){
+            $keyword = $request->string('keyword')->toString();
+            if (is_String($keyword)) {
+                $like = '%'.$keyword.'%';
+                $query->where('name','ILIKE',$like);
+            }
         }
 
-        $casts = $query->orderByDesc('id')->paginate(20)->withQueryString();
+        $casts = $query->orderByDesc('id')->paginate($Pagenate)->withQueryString();
         $occupations = Occupation::get();
         return view('admin.casts.index',compact('casts','occupations'));
     }
@@ -44,12 +54,12 @@ class CastController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function new()
     {
         //出演者登録
         $occupations = Occupation::get();
         
-        return view('admin.casts.create',compact('occupations'));
+        return view('admin.casts.new',compact('occupations'));
     }
 
     /**

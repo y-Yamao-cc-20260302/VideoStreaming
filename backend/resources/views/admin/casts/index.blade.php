@@ -8,7 +8,7 @@
 @section('content')
 <div class="card">
   <div class="card-header">
-    <a href="{{ route('admin.casts.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> 出演者を登録</a>
+    <a href="{{ route('admin.casts.new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> 出演者を登録</a>
   </div>
   <div class="card-body">
     <form method="GET" class="form-inline mb-3">
