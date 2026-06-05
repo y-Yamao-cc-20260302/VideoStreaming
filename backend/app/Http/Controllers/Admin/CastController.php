@@ -73,7 +73,9 @@ class CastController extends Controller
             DB::transaction(function () use ($data,$request,$image){
                 // 画像アップロード処理
                 if ($request->hasFile('picture')) {
-                    $data['picture_path'] = $image->uplodePicture($request->file('picture'));
+                    $img_path = $image->uplodePicture($request->file('picture'));
+                    // 出演者機能ではpictureフォルダに保存するため、頭にpicture/をつける
+                    $data['picture_path'] = 'picture/'.$img_path;
                 }
                 Cast::create($data);
             });
@@ -108,9 +110,11 @@ class CastController extends Controller
             // トランザクション処理を行う
             // function () use ($data) で、$dataをトランザクション内で使用できるようにする
             DB::transaction(function () use ($data,$request,$image,$cast){
-                        // 画像アップロード処理
+                // 画像アップロード処理
                 if ($request->hasFile('picture')) {
-                    $data['picture_path'] = $image->uplodePicture($request->file('picture'));
+                    $img_path = $image->uplodePicture($request->file('picture'));
+                    // 出演者機能ではpictureフォルダに保存するため、頭にpicture/をつける
+                    $data['picture_path'] = 'picture/'.$img_path;
                 }
                 $cast->update($data);
             });
