@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class ErrorHelper
 {
-    public function inputLog(Exception $e)
+    public function outputLog(Exception $e)
     {
         Log::error('エラーが発生しました。', [
             'message' => $e->getMessage(), // エラーメッセージ

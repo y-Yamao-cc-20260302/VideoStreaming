@@ -72,7 +72,7 @@ class CastController extends Controller
 
             return redirect()->route('admin.casts.index')->with('success', '出演者を登録しました');
         } catch (Exception $e) {
-            $errorHelper->inputLog($e);
+            $errorHelper->outputLog($e);
             // successに結果を代入して渡している
             return redirect()->route('admin.casts.index')->with('success', '登録に失敗しました');
         }
@@ -92,6 +92,11 @@ class CastController extends Controller
         try {
             // 画像アップロード処理
             if ($request->hasFile('picture')) {
+                // 新しい画像をアップロードする前に、古い写真があれば削除する
+                if ($cast->picture_path) {
+                    $image->deletePicture($cast->picture_path);
+                }
+
                 $img_path = $image->uplodePicture($request->file('picture'));
                 // 出演者機能ではpictureフォルダに保存するため、頭にpicture/をつける
                 $data['picture_path'] = 'picture/' . $img_path;
@@ -104,7 +109,7 @@ class CastController extends Controller
             });
             return redirect()->route('admin.casts.index')->with('success', '出演者を更新しました');
         } catch (Exception $e) {
-            $errorHelper->inputLog($e);
+            $errorHelper->outputLog($e);
             // successに結果を代入して渡している
             return redirect()->route('admin.casts.index')->with('success', '更新に失敗しました');
         }
@@ -125,7 +130,7 @@ class CastController extends Controller
             }
             return redirect()->route('admin.casts.index')->with('success', '出演者を削除しました');
         } catch (Exception $e) {
-            $errorHelper->inputLog($e);
+            $errorHelper->outputLog($e);
             return redirect()->route('admin.casts.index')->with('success', '削除に失敗しました');
         }
     }
@@ -141,7 +146,7 @@ class CastController extends Controller
             // backで元のページへもどる
             return back()->with('success', $cast->is_publish ? '公開しました' : '非公開しました');
         } catch (Exception $e) {
-            $errorHelper->inputLog($e);
+            $errorHelper->outputLog($e);
             return redirect()->route('admin.casts.index')->with('success', '更新に失敗しました');
         }
     }
