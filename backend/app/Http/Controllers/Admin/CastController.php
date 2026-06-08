@@ -90,13 +90,13 @@ class CastController extends Controller
         // 出演者情報を更新する
         $data = $request->safe()->except(('picture'));
         try {
+            $old_path = '';
             // 画像アップロード処理
             if ($request->hasFile('picture')) {
-                // 新しい画像をアップロードする前に、古い写真があれば削除する
+                // 古い画像のパスを一時保存
                 if ($cast->picture_path) {
-                    $image->deletePicture($cast->picture_path);
+                    $old_path = $cast->picture_path;
                 }
-
                 $img_path = $image->uplodePicture($request->file('picture'));
                 // 出演者機能ではpictureフォルダに保存するため、頭にpicture/をつける
                 $data['picture_path'] = 'picture/' . $img_path;
@@ -107,6 +107,10 @@ class CastController extends Controller
             DB::transaction(function () use ($data, $cast) {
                 $cast->update($data);
             });
+            // 新しい画像のアップロードが完了すれば、古い写真を削除する
+            if ($old_path && $cast->picture_path) {
+                $image->deletePicture($old_path);
+            }
             return redirect()->route('admin.casts.index')->with('success', '出演者を更新しました');
         } catch (Exception $e) {
             $errorHelper->outputLog($e);
