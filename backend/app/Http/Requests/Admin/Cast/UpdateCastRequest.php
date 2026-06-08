@@ -17,7 +17,7 @@ class UpdateCastRequest extends FormRequest
             'name'         => ['required', 'string', 'max:255'],
             'gender'   => ['nullable', 'integer'],
             'birthday'   => ['nullable', 'date'],
-            'occupation_id'=> ['nullable', 'integer','exists:occupations,id'],
+            'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
             'is_publish'  => ['nullable', 'boolean'],
             'picture'     => ['nullable', 'image', 'max:5120'],
         ];

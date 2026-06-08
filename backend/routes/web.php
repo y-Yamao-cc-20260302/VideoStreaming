@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VideoController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect('/admin'));
+Route::get('/', fn() => redirect('/admin'));
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('login',  [AdminAuthController::class, 'showLogin'])->name('login');
@@ -20,7 +20,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware('admin.auth')->group(function () {
-        Route::get('/', fn () => redirect()->route('admin.dashboard'));
+        Route::get('/', fn() => redirect()->route('admin.dashboard'));
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('videos',                [VideoController::class, 'index'])->name('videos.index');
@@ -44,19 +44,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
         // 出演者一覧表示 (基本はrequest空で遷移してるだけ。)
-        Route::get('casts',[CastController::class,'index'])->name('casts.index');
+        Route::get('casts', [CastController::class, 'index'])->name('casts.index');
         // 出演者登録
-        Route::get('casts/new',[CastController::class,'new'])->name('casts.new');
+        Route::get('casts/new', [CastController::class, 'new'])->name('casts.new');
         // 登録ページ、保存押下
-        Route::post('casts',[CastController::class,'store'])->name('casts.store');
+        Route::post('casts', [CastController::class, 'store'])->name('casts.store');
         // 出演者編集
-        Route::get('casts/{cast}/edit',[CastController::class,'edit'])->name('casts.edit');
+        Route::get('casts/{cast}/edit', [CastController::class, 'edit'])->name('casts.edit');
         // 編集ページ、保存押下
-        Route::patch('casts/{cast}',[CastController::class,'update'])->name('casts.update');
+        Route::patch('casts/{cast}', [CastController::class, 'update'])->name('casts.update');
         // 出演者削除
-        Route::delete('casts/{cast}',[CastController::class,'destroy'])->name('casts.destroy');
+        Route::delete('casts/{cast}', [CastController::class, 'destroy'])->name('casts.destroy');
         // 公開設定押下
         Route::patch('casts/{cast}/publish', [CastController::class, 'publish'])->name('casts.publish');
-
     });
 });
