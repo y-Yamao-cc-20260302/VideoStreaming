@@ -76,6 +76,11 @@
               <i class="nav-icon fas fa-bullhorn"></i><p>お知らせ</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('admin.casts.index') }}" class="nav-link {{ request()->routeIs('admin.casts.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-bullhorn"></i><p>出演者</p>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
