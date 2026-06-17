@@ -17,6 +17,7 @@ class CastController extends Controller
 {
     public function index(Request $request, $pagenate = 20)
     {
+
         $query = Cast::with(['occupation']);
         //値の変換ができれば、queryに職業idでの検索を追加
         $occupationId = $request->integer('occupation_id');
