@@ -12,8 +12,6 @@ use App\Models\Occupation;
 use Hash;
 use Storage;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Tests\Feature\Closure;
 
 class StoreCastTest extends TestCase
 {
@@ -47,8 +45,6 @@ class StoreCastTest extends TestCase
     // 引数は、データ型を特定するため、array型と定義
 
     #[DataProvider('StoreDataProvider')]
-    // エラーありの検証が途中なので、コメントとして残してあります
-    // public function test_store(array $queryParams, array $assertDatabaseHas = [], array $assertSessionHasErrors = [])
     public function test_store(array $queryParams, array $assertDatabaseHas = [])
     {
         // エラーを出力してくれる
@@ -82,7 +78,36 @@ class StoreCastTest extends TestCase
         $this->assertDatabaseHas('casts', $assertDatabaseHas);
         // 画像が正しくアップロードされているか
         Storage::disk('public')->assertExists($cast->picture_path);
-        // $response->assertSessionHasErrors($assertSessionHasErrors);
+    }
+
+
+    // 登録に失敗する場合
+    #[DataProvider('DontStoreDataProvider')]
+    public function test_dont_store(array $queryParams)
+    {
+        // エラーを出力してくれる
+        $this->withoutExceptionHandling();
+        // Laravel11からの書き方、csrfトークンの無効化
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+
+        //認証を入れる
+        $admin = Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        Storage::fake('public');
+        // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
+        $response = $this->actingAs($admin, 'admin')
+            // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
+            ->followingRedirects()
+            ->post(route('admin.casts.store'), $queryParams);
+
+        // 通信ができたかどうか(登録に失敗し、管理画面に戻るのでステータスは200)
+        $response->assertStatus(200);
+        // データベースの件数を確認する。今回は登録失敗して、1件のままならtrueという意味
+        $this->assertDatabaseCount('casts', 1);
     }
 
     // データプロバイダーはstaticとarrayが必須
@@ -109,22 +134,25 @@ class StoreCastTest extends TestCase
                     'is_publish' => true,
                     'picture_path' => ''
                 ],
-
             ],
-            // テストケース10に相当 公開設定else,データ登録失敗のテスト
-            // 'publishFalse' => [
-            //     'queryParams'    => [
-            //         'name' => '西野涼子',
-            //         'gender' => 1,
-            //         'birthday' => "1987-06-11",
-            //         'publish' => false,
-            //         'occupation_id' => 1,
-            //         'picture' => '',
-            //     ],
-            //     'assertDatabaseHas' => [],
-            //     'assertSessionHasErrors' => ['name'],
-            // ],
+        ];
+    }
 
+    // データプロバイダーはstaticとarrayが必須
+    public static function DontStoreDataProvider(): array
+    {
+        return [
+            // テストケース10に相当 公開設定else,データ登録失敗のテスト
+            'publishFalse' => [
+                'queryParams'    => [
+                    'name' => '西野涼子',
+                    'gender' => 2,
+                    'birthday' => "1987-06-11",
+                    'publish' => false,
+                    'occupation_id' => 1,
+                    'picture' => '',
+                ],
+            ],
         ];
     }
 }
