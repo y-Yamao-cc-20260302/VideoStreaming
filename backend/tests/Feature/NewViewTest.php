@@ -8,12 +8,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Admin;
 use Hash;
 
-// テストケース5に相当
+
 class NewViewTest extends TestCase
 {
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能(管理者ユーザー作成に必要)
     use RefreshDatabase;
-
+    // テストケース5に相当
     public function test_new_view()
     {
         // エラー出力

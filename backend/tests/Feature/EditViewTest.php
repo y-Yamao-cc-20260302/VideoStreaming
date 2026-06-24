@@ -49,9 +49,9 @@ class EditViewTest extends TestCase
         $filename = $picture->hashName();
         Storage::disk('public')->putFileAs('picture', $picture, $filename);
         // ダミーデータのための画像パスを作成
-        $pictrePath = 'picture/' . $filename;
+        $picturePath = 'picture/' . $filename;
         // 編集画面に遷移するためのダミーデータを生成
-        $cast = Cast::factory()->create(['name' => '北田太郎', 'gender' => 1, 'birthday' => "1987-06-11", 'occupation_id' => 1, 'is_publish' => 1, 'picture_path' => $pictrePath]);
+        $cast = Cast::factory()->create(['name' => '北田太郎', 'gender' => 1, 'birthday' => "1987-06-11", 'occupation_id' => 1, 'is_publish' => 1, 'picture_path' => $picturePath]);
         // エラー出力用
         $this->withoutExceptionHandling();
         //認証を入れる
