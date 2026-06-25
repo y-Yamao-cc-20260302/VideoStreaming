@@ -176,7 +176,7 @@ class DestroyCastTest extends TestCase
         ];
     }
 
-    // データプロバイダーはstaticとarrayが必須
+    // データプロバイダーはstaticとarrayが必須。
     public static function DontDestroyDataProvider(): array
     {
         return [

@@ -72,7 +72,7 @@ class StoreCastTest extends TestCase
         $cast = Cast::where('name', $queryParams['name'])->latest()->first();
         // 写真パスを取得
         $picture_path = $cast->picture_path;
-        // 期待結果のほうの写真パスに、取得した写真パスを格納
+        // 期待結果のほうの写真パスに、取得した写真パスを格納.
         $assertDatabaseHas['picture_path'] = $picture_path;
         // DBの内容が期待結果と一致しているかを検証
         $this->assertDatabaseHas('casts', $assertDatabaseHas);

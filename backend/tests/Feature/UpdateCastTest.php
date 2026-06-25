@@ -55,7 +55,7 @@ class UpdateCastTest extends TestCase
 
         // ダミー画像を生成
         $picture = UploadedFile::fake()->image('image.png', 200, 200)->size(3072);
-        // ファイル名を生成し、public/pictureフォルダに保存する
+        // ファイル名を生成し、public/pictureフォルダに保存する.
         $filename = $picture->hashName();
         Storage::disk('public')->putFileAs('picture', $picture, $filename);
 

@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PublishCastTest extends TestCase
 {
-    // テスト実行するたびにデータベースをロールバックまでしてくれる機能
+    // テスト実行するたびにデータベースをロールバックまでしてくれる機能.
     use RefreshDatabase;
 
     protected function setUp(): void

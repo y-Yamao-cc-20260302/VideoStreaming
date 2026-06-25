@@ -24,7 +24,7 @@ class SearchCastTest extends TestCase
 
     protected function setUp(): void
     {
-        //データベース使用のため必須
+        //データベース使用のため必須.
         parent::setUp();
 
         // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)

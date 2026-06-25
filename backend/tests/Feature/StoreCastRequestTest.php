@@ -14,7 +14,7 @@ use Illuminate\Http\UploadedFile;
 
 class StoreCastRequestTest extends TestCase
 {
-    // テスト実行するたびにデータベースをロールバックまでしてくれる機能
+    // テスト実行するたびにデータベースをロールバックまでしてくれる機能.
     use RefreshDatabase;
 
     protected function setUp(): void

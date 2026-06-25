@@ -34,7 +34,7 @@ class NewViewTest extends TestCase
         $response->assertViewIs('admin.casts.new');
     }
 
-    // テストケース6に相当
+    // テストケース6に相当.
     public function test_dont_new_view()
     {
         // エラー出力
