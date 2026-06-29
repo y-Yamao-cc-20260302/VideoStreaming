@@ -36,14 +36,17 @@ class UplodePictureTest extends TestCase
     #[DataProvider('ProvideDateProvider')]
     public function test_dont_uplode_picture(object $img)
     {
+        // 画像アップロード用のストレージを作成
+        Storage::fake('public');
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
         // 画像でないオブジェクトでは、Call to undefined methodのエラーになるため。
-        $this->expectExceptionMessage('Call to undefined method stdClass::store()');
+        $this->expectExceptionMessage('Call to undefined method stdClass::getMimeType()');
         // オブジェクトを作成
         $imagehelper = new ImageHelper();
         // 画像アップロード関数を呼び出す
         $imagehelper->uplodePicture($img);
+        // Storage::disk('public')->assertExists($img_path);
     }
 
     public static function ProvideDateProvider(): array

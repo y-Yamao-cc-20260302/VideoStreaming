@@ -10,18 +10,19 @@ class ImageHelper
 {
     public function uplodePicture(object $picture)
     {
+        $filename = '';
         try {
-            if ($picture) {
+            if (str_starts_with($picture->getMimeType(), 'image/')) {
                 // 引数の画像を保存
                 $picture->store('picture', 'public');
                 // 画像のファイルネームを取得
                 $filename = $picture->hashName();
             }
             // ファイルネームを返却
-            return $filename;
         } catch (Exception $e) {
             Error_Log($e);
         }
+        return $filename;
     }
 
     public function deletePicture(string $picture_path)
