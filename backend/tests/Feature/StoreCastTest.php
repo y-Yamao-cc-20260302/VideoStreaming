@@ -7,8 +7,6 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Cast;
 use App\Models\Admin;
-use Exception;
-use App\Models\Occupation;
 use Hash;
 use Storage;
 use Illuminate\Http\UploadedFile;
@@ -17,28 +15,19 @@ class StoreCastTest extends TestCase
 {
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能
     use RefreshDatabase;
-
-    // // 動作確認用　trueだけを返すテスト
-    // public function test_exsample()
-    // {
-    //     $this->assertTrue(true);
-    // }
-
+    // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
+    protected $seeder = OccupationSeeder::class;
     protected function setUp(): void
     {
         //データベース使用のため必須
         parent::setUp();
 
-        // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
-        Occupation::factory()->count(6)->sequence(
-            ['id' => 1, 'name' => '俳優',],
-            ['id' => 2, 'name' => 'お笑い芸人',],
-            ['id' => 3, 'name' => 'アイドル',],
-            ['id' => 4, 'name' => 'タレント',],
-            ['id' => 5, 'name' => 'アナウンサー',],
-            ['id' => 6, 'name' => '落語家',],
-        )->create();
-        Cast::factory()->create(['name' => '西野涼子', 'is_publish' => 1, 'occupation_id' => 1]);
+        //認証を入れる
+        Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
     }
 
     // データプロバイダのアノテーション()が必要。　しゃーぷ[DataProvider('関数名')]と書き、インポートもする。
@@ -52,12 +41,8 @@ class StoreCastTest extends TestCase
         // Laravel11からの書き方、csrfトークンの無効化
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
 
         Storage::fake('public');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
@@ -80,7 +65,6 @@ class StoreCastTest extends TestCase
         Storage::disk('public')->assertExists($cast->picture_path);
     }
 
-
     // 登録に失敗する場合
     #[DataProvider('DontStoreDataProvider')]
     public function test_dont_store(array $queryParams)
@@ -89,13 +73,8 @@ class StoreCastTest extends TestCase
         $this->withoutExceptionHandling();
         // Laravel11からの書き方、csrfトークンの無効化
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
-
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
 
         Storage::fake('public');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
@@ -132,7 +111,7 @@ class StoreCastTest extends TestCase
                     'occupation_id' => 1,
                     'birthday' => "1987-06-11",
                     'is_publish' => true,
-                    'picture_path' => ''
+                    'picture_path' => '',
                 ],
             ],
         ];

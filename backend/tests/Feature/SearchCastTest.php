@@ -7,8 +7,7 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Cast;
 use App\Models\Admin;
-use Exception;
-use App\Models\Occupation;
+use Database\Seeders\OccupationSeeder;
 use Hash;
 
 class SearchCastTest extends TestCase
@@ -16,47 +15,37 @@ class SearchCastTest extends TestCase
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能
     use RefreshDatabase;
 
-    // 動作確認用　trueだけを返すテスト
-    public function test_exsample()
-    {
-        $this->assertTrue(true);
-    }
-
+    // Seedファイルを実行し職業データをDBに入れる(seedと同じものを登録している)
+    protected $seeder = OccupationSeeder::class;
     protected function setUp(): void
     {
         //データベース使用のため必須.
         parent::setUp();
 
-        // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
-        Occupation::factory()->count(6)->sequence(
-            ['id' => 1, 'name' => '俳優',],
-            ['id' => 2, 'name' => 'お笑い芸人',],
-            ['id' => 3, 'name' => 'アイドル',],
-            ['id' => 4, 'name' => 'タレント',],
-            ['id' => 5, 'name' => 'アナウンサー',],
-            ['id' => 6, 'name' => '落語家',],
-        )->create();
+        //認証を入れる
+        Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
 
         // テストデータを登録
         Cast::factory()->create(['name' => '田中太郎', 'is_publish' => 1, 'occupation_id' => 1]);
         Cast::factory()->create(['name' => '非公開出演者', 'is_publish' => 0, 'occupation_id' => 1]);
-        Cast::factory()->create(['name' => '田中次郎', 'is_publish' => '0', 'occupation_id' => '1', 'deleted_at' => '2026-06-05 02:30:20.000']);
+        Cast::factory()->create(['name' => '田中次郎', 'is_publish' => '0', 'occupation_id' => 1, 'deleted_at' => '2026-06-05 02:30:20.000']);
     }
 
     // データプロバイダのアノテーション()が必要。　しゃーぷ[DataProvider('関数名')]と書き、インポートもする。
     // 引数は、データ型を特定するため、array型と定義
-
+    // assertText=[]の空白は、無いなら空にするという意味
     #[DataProvider('searchDataProvider')]
     public function test_search(array $queryParams, array $assertSeeText = [], array $assertDontSeeText = [])
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
 
         // route関数は、第二引数にqueryParams用の配列を渡すと、自動でクエリ文字列に変換してくれる
         $url = route('admin.casts.index', $queryParams);
