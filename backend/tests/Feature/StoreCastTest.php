@@ -7,6 +7,7 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Cast;
 use App\Models\Admin;
+use Database\Seeders\OccupationSeeder;
 use Hash;
 use Storage;
 use Illuminate\Http\UploadedFile;
@@ -122,7 +123,7 @@ class StoreCastTest extends TestCase
     {
         return [
             // テストケース10に相当 公開設定else,データ登録失敗のテスト
-            'publishFalse' => [
+            'uniqueFalse' => [
                 'queryParams'    => [
                     'name' => '西野涼子',
                     'gender' => 2,

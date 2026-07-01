@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ImageHelper

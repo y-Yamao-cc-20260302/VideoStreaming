@@ -16,7 +16,7 @@ class DeletePictureTest extends TestCase
 
     // 引数は、データ型を特定するため、array型と定義
 
-    // 写真の削除ができる
+    // テストケース27に相当、写真の削除ができる
     public function test_delete_picture()
     {
         // エラーを出力してくれる
@@ -72,8 +72,11 @@ class DeletePictureTest extends TestCase
     public static function ProvideDateProvider(): array
     {
         return [
+            // テストケース28に相当　画像パスでないものを引数として呼び出す
             'emptyPath' => ['delete_img_path' => '',],
+            // テストケース29に相当　画像パスでないものを引数として呼び出す
             'noString' => ['delete_img_path' => 1,],
+            // テストケース30に相当　存在しない画像パスを引数として呼び出す
             'noexistpath' => ['delete_img_path' => 'picture/noimagenapass',],
         ];
     }
