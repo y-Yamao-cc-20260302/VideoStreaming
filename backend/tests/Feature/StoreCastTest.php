@@ -23,6 +23,12 @@ class StoreCastTest extends TestCase
         //データベース使用のため必須
         parent::setUp();
 
+        // ストレージを用意
+        Storage::fake('public');
+
+        // Laravel11からの書き方、csrfトークンの無効化
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+
         //認証を入れる
         Admin::factory()->create([
             'name' => 'admin',
@@ -33,19 +39,15 @@ class StoreCastTest extends TestCase
 
     // データプロバイダのアノテーション()が必要。　しゃーぷ[DataProvider('関数名')]と書き、インポートもする。
     // 引数は、データ型を特定するため、array型と定義
-
     #[DataProvider('StoreDataProvider')]
     public function test_store(array $queryParams, array $assertDatabaseHas = [])
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // 管理者を取得
         $admin = Admin::where('name', 'admin')->first();
 
-        Storage::fake('public');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
         $response = $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
@@ -72,12 +74,9 @@ class StoreCastTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
         // 管理者を取得
         $admin = Admin::where('name', 'admin')->first();
 
-        Storage::fake('public');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
         $response = $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
@@ -97,7 +96,6 @@ class StoreCastTest extends TestCase
             // テストケース9に相当 if文true、DB登録可能
             'allTrue' => [
                 'queryParams'    => [
-                    // '_token' => csrf_token(),
                     'name' => '北田太郎',
                     'gender' => 1,
                     'birthday' => "1987-06-11",

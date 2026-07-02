@@ -7,13 +7,15 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Cast;
 use App\Models\Admin;
-use App\Models\Occupation;
+use Database\Seeders\OccupationSeeder;
 use Hash;
 use Storage;
 use Illuminate\Http\UploadedFile;
 
 class StoreCastRequestTest extends TestCase
 {
+    // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
+    protected $seeder = OccupationSeeder::class;
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能.
     use RefreshDatabase;
 
@@ -22,15 +24,18 @@ class StoreCastRequestTest extends TestCase
         //データベース使用のため必須
         parent::setUp();
 
-        // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
-        Occupation::factory()->count(6)->sequence(
-            ['id' => 1, 'name' => '俳優',],
-            ['id' => 2, 'name' => 'お笑い芸人',],
-            ['id' => 3, 'name' => 'アイドル',],
-            ['id' => 4, 'name' => 'タレント',],
-            ['id' => 5, 'name' => 'アナウンサー',],
-            ['id' => 6, 'name' => '落語家',],
-        )->create();
+        // 画像ストレージを作成
+        Storage::fake('public');
+
+        // Laravel11からの書き方、csrfトークンの無効化
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+
+        //認証を入れる
+        Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
     }
 
     // データプロバイダのアノテーション()が必要。　しゃーぷ[DataProvider('関数名')]と書き、インポートもする。
@@ -41,17 +46,8 @@ class StoreCastRequestTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
-
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        Storage::fake('public');
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
         $response = $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
@@ -78,18 +74,8 @@ class StoreCastRequestTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
-
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // 写真ストレージを用意
-        Storage::fake('public');
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
         $this->expectExceptionMessage('The name field must not be greater than 255 characters.');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
         $this->actingAs($admin, 'admin')

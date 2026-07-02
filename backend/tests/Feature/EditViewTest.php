@@ -7,33 +7,30 @@ use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use App\Models\Cast;
 use App\Models\Admin;
-use App\Models\Occupation;
 use PHPUnit\Framework\Attributes\DataProvider;
-
 use Hash;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Database\Seeders\OccupationSeeder;
 
 // 編集画面への遷移確認
 class EditViewTest extends TestCase
 {
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能
     use RefreshDatabase;
+    // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
+    protected $seeder = OccupationSeeder::class;
 
     protected function setUp(): void
     {
         //データベース使用のため必須
         parent::setUp();
-
-        // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
-        Occupation::factory()->count(6)->sequence(
-            ['id' => 1, 'name' => '俳優',],
-            ['id' => 2, 'name' => 'お笑い芸人',],
-            ['id' => 3, 'name' => 'アイドル',],
-            ['id' => 4, 'name' => 'タレント',],
-            ['id' => 5, 'name' => 'アナウンサー',],
-            ['id' => 6, 'name' => '落語家',],
-        )->create();
+        //認証を入れる
+        Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
     }
     // テストケース11に該当
     #[DataProvider('EditDataProvider')]
@@ -49,16 +46,13 @@ class EditViewTest extends TestCase
         Storage::disk('public')->putFileAs('picture', $picture, $filename);
         // ダミーデータのための画像パスを作成
         $picturePath = 'picture/' . $filename;
+
         // 編集画面に遷移するためのダミーデータを生成
         $cast = Cast::factory()->create(['name' => '北田太郎', 'gender' => 1, 'birthday' => "1987-06-11", 'occupation_id' => 1, 'is_publish' => 1, 'picture_path' => $picturePath]);
         // エラー出力用
         $this->withoutExceptionHandling();
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
         // 変数urlを作成
         $url = "admin/casts/{$cast->id}/edit";
         // 管理者権限を付与してgetアクションする
@@ -76,12 +70,8 @@ class EditViewTest extends TestCase
         $this->withoutExceptionHandling();
         // データベースからデータを取得する際の、該当データがない場合のエラーを確認する
         $this->expectException(ModelNotFoundException::class);
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
         // データを作成し、すぐに論理削除することで、該当データを取得できないようにしている
         $cast = Cast::factory()->create(['name' => '南野洋子', 'gender' => 2, 'birthday' => "1987-06-11", 'occupation_id' => 1, 'is_publish' => 0,]);
         $cast->delete();

@@ -7,7 +7,7 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use App\Models\Cast;
 use App\Models\Admin;
-use App\Models\Occupation;
+use Database\Seeders\OccupationSeeder;
 use Hash;
 use Storage;
 use Illuminate\Http\UploadedFile;
@@ -17,21 +17,33 @@ class PublishCastTest extends TestCase
 {
     // テスト実行するたびにデータベースをロールバックまでしてくれる機能.
     use RefreshDatabase;
+    protected $seeder = OccupationSeeder::class;
+    private string $dummyPicturePath = '';
 
     protected function setUp(): void
     {
         //データベース使用のため必須
         parent::setUp();
+        //認証を入れる
+        Admin::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+        ]);
 
-        // occupation_idを有効にするため、職業テーブルに値を登録(seedと同じものを登録している)
-        Occupation::factory()->count(6)->sequence(
-            ['id' => 1, 'name' => '俳優',],
-            ['id' => 2, 'name' => 'お笑い芸人',],
-            ['id' => 3, 'name' => 'アイドル',],
-            ['id' => 4, 'name' => 'タレント',],
-            ['id' => 5, 'name' => 'アナウンサー',],
-            ['id' => 6, 'name' => '落語家',],
-        )->create();
+        // Laravel11からの書き方、csrfトークンの無効化
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+
+        // 画像アップロード用のストレージを作成
+        Storage::fake('public');
+        // ダミー画像を生成
+        $picture = UploadedFile::fake()->image('image.png', 200, 200)->size(3072);
+        // ファイル名を生成し、public/pictureフォルダに保存する
+        $filename = $picture->hashName();
+        Storage::disk('public')->putFileAs('picture', $picture, $filename);
+
+        // ダミー画像のファイルパスを作成
+        $this->dummyPicturePath = 'picture/' . $filename;
     }
 
     // データプロバイダのアノテーション()が必要。　しゃーぷ[DataProvider('関数名')]と書き、インポートもする。
@@ -43,30 +55,12 @@ class PublishCastTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
-
-        // 画像アップロード用のストレージを作成
-        Storage::fake('public');
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // ダミー画像を生成
-        $picture = UploadedFile::fake()->image('image.png', 200, 200)->size(3072);
-        // ファイル名を生成し、public/pictureフォルダに保存する
-        $filename = $picture->hashName();
-        Storage::disk('public')->putFileAs('picture', $picture, $filename);
-
-        // ダミー画像のファイルパスを作成
-        $picturePath = 'picture/' . $filename;
         // ファイルパスをクエリに入れる
-        $queryParams['picture_path'] = $picturePath;
+        $queryParams['picture_path'] = $this->dummyPicturePath;
         // ダミーデータを作成する
         $cast = Cast::factory()->create($queryParams);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
 
         // コントローラを直接呼ばず、Laravelのpatchで送信する。patchの場合は第二引数をqueryParamsにする
         $response = $this->actingAs($admin, 'admin')
@@ -80,7 +74,7 @@ class PublishCastTest extends TestCase
         $cast = Cast::where('id', $cast->id)->first();
         //// 公開設定が　False　に更新されているかを確認する
         $this->assertFalse($cast->is_publish);
-        // 画像が正しくアップロードされているか
+        // 画像が正しく保存されたままか
         Storage::disk('public')->assertExists($cast->picture_path);
     }
 
@@ -90,28 +84,10 @@ class PublishCastTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
-
-        // 画像アップロード用のストレージを作成
-        Storage::fake('public');
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // ダミー画像を生成
-        $picture = UploadedFile::fake()->image('image.png', 200, 200)->size(3072);
-        // ファイル名を生成し、public/pictureフォルダに保存する
-        $filename = $picture->hashName();
-        Storage::disk('public')->putFileAs('picture', $picture, $filename);
-
-        // ダミー画像のファイルパスを作成
-        $picturePath = 'picture/' . $filename;
         // ファイルパスをクエリに入れる
-        $queryParams['picture_path'] = $picturePath;
+        $queryParams['picture_path'] = $this->dummyPicturePath;
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
         // ダミーデータを作成する
         $cast = Cast::factory()->create($queryParams);
 
@@ -127,7 +103,7 @@ class PublishCastTest extends TestCase
         $cast = Cast::where('id', $cast->id)->first();
         // 公開設定が　True　に更新されているかを確認する
         $this->assertTrue($cast->is_publish);
-        // 画像が正しくアップロードされているか
+        // 画像が正しく保存されたままか
         Storage::disk('public')->assertExists($cast->picture_path);
     }
 
@@ -137,25 +113,18 @@ class PublishCastTest extends TestCase
     {
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // Laravel11からの書き方、csrfトークンの無効化
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // DBからデータが見つからないエラーを期待する
         $this->expectException(ModelNotFoundException::class);
-
-        //認証を入れる
-        $admin = Admin::factory()->create([
-            'name' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // 管理者を取得
+        $admin = Admin::where('name', 'admin')->first();
 
         // ダミーデータを作成する
         $cast = Cast::factory()->create($queryParams);
         $cast->delete();
 
         // コントローラを直接呼ばず、Laravelのpatchで送信する。patchの場合は第二引数をqueryParamsにする
-        $response = $this->actingAs($admin, 'admin')
+        $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
             ->followingRedirects()
             ->patch("admin/casts/{$cast->id}/publish", $queryParams);
