@@ -40,23 +40,21 @@ class UplodePictureTest extends TestCase
         Storage::fake('public');
         // エラーを出力してくれる
         $this->withoutExceptionHandling();
-        // 画像でないオブジェクトでは、Call to undefined methodのエラーになるため。
-        $this->expectExceptionMessage('Call to undefined method stdClass::getMimeType()');
         // オブジェクトを作成
         $imagehelper = new ImageHelper();
         // 画像アップロード関数を呼び出す
-        $imagehelper->uplodePicture($img);
-        // Storage::disk('public')->assertExists($img_path);
+        $path = $imagehelper->uplodePicture($img);
+        // 空文字かどうかを確認
+        $this->assertEmpty($path);
     }
 
     public static function ProvideDateProvider(): array
     {
         return [
-            // テストケース25に相当　画像ではないものを入力値とする
+            // テストケース25に相当　画像ではないオブジェクトを入力値とする
             'noImageObject' => ['img' => (object)['name' => 'a',]],
-            // テストケース26に相当　空のオブジェクトを引数として呼び出す
-            // が、空のオブジェクトで渡してもhelper側がfalseにならない。
-            'emptyObject' => ['img' => (object)[],],
+            // テストケース26に相当　テキストファイルを引数として呼び出す
+            'emptyObject' => [UploadedFile::fake()->create('test_document.text', 10)],
         ];
     }
 }

@@ -4,23 +4,30 @@ namespace App\Helpers;
 
 use Exception;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class ImageHelper
 {
     public function uplodePicture(object $picture)
     {
+        // 初期値が空文字のファイルネームを生成　引数が写真でないなら空文字を返す
         $filename = '';
         try {
-            if (str_starts_with($picture->getMimeType(), 'image/')) {
-                // 引数の画像を保存
-                $picture->store('picture', 'public');
-                // 画像のファイルネームを取得
-                $filename = $picture->hashName();
+            // $pictureがgetMineType(ファイル種別確認メソッド)を持っているか確認
+            if (method_exists($picture, 'getMimeType')) {
+                // ファイル種別が画像かどうかを確認
+                // str_starts_withは第二引数の部分文字列で始まるかどうか確認する
+                if (str_starts_with($picture->getMimeType(), 'image/')) {
+                    // 引数の画像を保存
+                    $picture->store('picture', 'public');
+                    // 画像のファイルネームを取得
+                    $filename = $picture->hashName();
+                }
             }
-            // ファイルネームを返却
         } catch (Exception $e) {
-            Error_Log($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
         }
+        // ファイルネームを返却
         return $filename;
     }
 
@@ -34,7 +41,7 @@ class ImageHelper
                 }
             }
         } catch (Exception $e) {
-            Error_Log($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
         }
     }
 }
