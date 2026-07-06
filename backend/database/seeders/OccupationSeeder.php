@@ -14,14 +14,16 @@ class OccupationSeeder extends Seeder
     public function run(): void
     {
         $occupations = [
-            ['name' => '俳優', ],
+            ['name' => '俳優',],
             ['name' => 'お笑い芸人',],
             ['name' => 'アイドル',],
             ['name' => 'タレント',],
+            ['name' => 'アナウンサー',],
+            ['name' => '落語家',],
         ];
 
         foreach ($occupations as $occupation) {
-            Occupation::updateOrCreate( $occupation);
+            Occupation::updateOrCreate($occupation);
         }
     }
 }

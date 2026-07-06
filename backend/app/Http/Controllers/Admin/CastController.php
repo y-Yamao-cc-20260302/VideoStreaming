@@ -9,14 +9,15 @@ use App\Models\Occupation;
 use App\Http\Requests\Admin\Cast\StoreCastRequest;
 use App\Http\Requests\Admin\Cast\UpdateCastRequest;
 use App\Helpers\ImageHelper;
-use App\Helpers\ErrorHelper;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Log;
 
 class CastController extends Controller
 {
     public function index(Request $request, $pagenate = 20)
     {
+
         $query = Cast::with(['occupation']);
         //値の変換ができれば、queryに職業idでの検索を追加
         $occupationId = $request->integer('occupation_id');
@@ -53,7 +54,7 @@ class CastController extends Controller
         return view('admin.casts.new', compact('occupations'));
     }
 
-    public function store(StoreCastRequest $request, ImageHelper $image, ErrorHelper $errorHelper)
+    public function store(StoreCastRequest $request, ImageHelper $image,)
     {
         $data = $request->safe()->except(('picture'));
         // 画像アップロード処理
@@ -72,7 +73,7 @@ class CastController extends Controller
 
             return redirect()->route('admin.casts.index')->with('success', '出演者を登録しました');
         } catch (Exception $e) {
-            $errorHelper->outputLog($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
             // successに結果を代入して渡している
             return redirect()->route('admin.casts.index')->with('success', '登録に失敗しました');
         }
@@ -85,7 +86,7 @@ class CastController extends Controller
         return view('admin.casts.edit', compact('cast', 'occupations'));
     }
 
-    public function update(UpdateCastRequest $request, Cast $cast, ImageHelper $image, ErrorHelper $errorHelper)
+    public function update(UpdateCastRequest $request, Cast $cast, ImageHelper $image,)
     {
         // 出演者情報を更新する
         $data = $request->safe()->except(('picture'));
@@ -113,13 +114,13 @@ class CastController extends Controller
             }
             return redirect()->route('admin.casts.index')->with('success', '出演者を更新しました');
         } catch (Exception $e) {
-            $errorHelper->outputLog($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
             // successに結果を代入して渡している
             return redirect()->route('admin.casts.index')->with('success', '更新に失敗しました');
         }
     }
 
-    public function destroy(Cast $cast, ImageHelper $image, ErrorHelper $errorHelper)
+    public function destroy(Cast $cast, ImageHelper $image,)
     {
         $img_path = $cast->picture_path;
 
@@ -134,12 +135,12 @@ class CastController extends Controller
             }
             return redirect()->route('admin.casts.index')->with('success', '出演者を削除しました');
         } catch (Exception $e) {
-            $errorHelper->outputLog($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
             return redirect()->route('admin.casts.index')->with('success', '削除に失敗しました');
         }
     }
 
-    public function publish(Cast $cast, ErrorHelper $errorHelper)
+    public function publish(Cast $cast,)
     {
         // 公開状態を更新する
         try {
@@ -150,7 +151,7 @@ class CastController extends Controller
             // backで元のページへもどる
             return back()->with('success', $cast->is_publish ? '公開しました' : '非公開しました');
         } catch (Exception $e) {
-            $errorHelper->outputLog($e);
+            Log::error($e->getMessage(), ['exception' => $e]);
             return redirect()->route('admin.casts.index')->with('success', '更新に失敗しました');
         }
     }
