@@ -24,6 +24,8 @@ return new class extends Migration
 
             $table->unique('name');
             $table->foreign('occupation_id')->references('id')->on('occupations');
+            $table->index(['name']);
+            $table->index(['name', 'gender'], 'casts_index');
         });
     }
 

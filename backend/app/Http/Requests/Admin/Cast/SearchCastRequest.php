@@ -1,10 +1,10 @@
 <?php
-
+// 検索するときのバリデーションチェック
 namespace App\Http\Requests\Admin\Cast;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCastRequest extends FormRequest
+class SearchCastRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,12 +14,9 @@ class StoreCastRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'         => ['required', 'string', 'max:255', 'unique:casts,name'],
+            'keyword'         => ['nullable', 'string', 'max:255'],
             'gender'   => ['nullable', 'integer'],
-            'birthday'   => ['nullable', 'date'],
             'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
-            'is_publish'  => ['nullable', 'boolean'],
-            'picture'     => ['nullable', 'image', 'max:5120'],
         ];
     }
 

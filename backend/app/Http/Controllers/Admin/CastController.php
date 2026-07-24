@@ -8,6 +8,7 @@ use App\Models\Cast;
 use App\Models\Occupation;
 use App\Http\Requests\Admin\Cast\StoreCastRequest;
 use App\Http\Requests\Admin\Cast\UpdateCastRequest;
+use App\Http\Requests\Admin\Cast\SearchCastRequest;
 use App\Helpers\ImageHelper;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -15,7 +16,7 @@ use Log;
 
 class CastController extends Controller
 {
-    public function index(Request $request, $pagenate = 20)
+    public function index(SearchCastRequest $request, $pagenate = 20)
     {
 
         $query = Cast::with(['occupation']);
@@ -75,7 +76,8 @@ class CastController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage(), ['exception' => $e]);
             // successに結果を代入して渡している
-            return redirect()->route('admin.casts.index')->with('success', '登録に失敗しました');
+
+            return redirect()->route('admin.casts.index')->with('error', '登録に失敗しました');
         }
     }
 
@@ -116,7 +118,7 @@ class CastController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage(), ['exception' => $e]);
             // successに結果を代入して渡している
-            return redirect()->route('admin.casts.index')->with('success', '更新に失敗しました');
+            return redirect()->route('admin.casts.index')->with('error', '更新に失敗しました');
         }
     }
 

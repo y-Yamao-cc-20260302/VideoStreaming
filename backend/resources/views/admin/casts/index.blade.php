@@ -11,6 +11,15 @@
     <a href="{{ route('admin.casts.new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> 出演者を登録</a>
   </div>
   <div class="card-body">
+    @if($errors->any())
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+      @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+      @endforeach
+      </ul>
+    </div>
+    @endif
     <form method="GET" class="form-inline mb-3">
       <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control mr-2" placeholder="キーワード">
       <select name="occupation_id" class="form-control mr-2">
