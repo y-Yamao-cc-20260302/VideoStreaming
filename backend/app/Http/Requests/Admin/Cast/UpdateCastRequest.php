@@ -14,12 +14,12 @@ class UpdateCastRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'         => ['required', 'string', 'max:255', 'unique:casts,name'],
-            'gender'   => ['nullable', 'integer'],
-            'birthday'   => ['nullable', 'date'],
+            'name' => ['required', 'string', 'max:255', 'unique:casts,name'],
+            'gender' => ['nullable', 'integer'],
+            'birthday' => ['nullable', 'date'],
             'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
-            'is_publish'  => ['nullable', 'boolean'],
-            'picture'     => ['nullable', 'image', 'max:5120'],
+            'is_publish' => ['nullable', 'boolean'],
+            'picture' => ['nullable', 'image', 'max:5120'],
         ];
     }
 

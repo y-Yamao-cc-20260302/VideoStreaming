@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('casts', function (Blueprint $table) {
             // index専用のファイルを作成することも可能
-            // $table->index(['name']);// 重複すると追加できないのでコメントアウト
+            $table->index(['name']);
             $table->index(['occupation_id', 'is_publish'], 'occupation_publish');
         });
     }
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('casts', function (Blueprint $table) {
-
+            // upに対応するdownを記載する
             $table->dropIndex(['name']);
             $table->dropIndex('occupation_publish');
         });

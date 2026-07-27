@@ -14,8 +14,8 @@ class SearchCastRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'keyword'         => ['nullable', 'string', 'max:255'],
-            'gender'   => ['nullable', 'integer'],
+            'keyword' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', 'integer'],
             'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
         ];
     }

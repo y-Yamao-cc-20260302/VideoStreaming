@@ -4,7 +4,7 @@ services:
       context: ./docker/app
     volumes:
       - ./backend:/var/www/app
-      # php.iniを、uploads.iniにコピーする
+      # php.iniの記述を、uploads.iniに反映する
       - ./php.ini:/usr/local/etc/php/conf.d/uploads.ini
     environment:
       APP_ENV: local
