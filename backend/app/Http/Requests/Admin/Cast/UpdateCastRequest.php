@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Cast;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCastRequest extends FormRequest
@@ -13,8 +14,11 @@ class UpdateCastRequest extends FormRequest
 
     public function rules(): array
     {
+        // 編集対象の出演者のnameを取得
+        $name = $this->route('cast');
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:casts,name'],
+            // ignoreは編集時の例外、名前を更新せずに保存してもバリデーションエラーが発生しないようにする
+            'name' => ['required', 'string', 'max:255', Rule::unique('casts', 'name')->ignore($name)],
             'gender' => ['nullable', 'integer'],
             'birthday' => ['nullable', 'date'],
             'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
