@@ -24,10 +24,6 @@ return new class extends Migration
 
             $table->unique('name');
             $table->foreign('occupation_id')->references('id')->on('occupations');
-            // インデックスの追加方法
-            // $table->index(['name']);
-            // $table->index(['name', 'gender'], 'casts_index');
-            // push済みのマイグレーションファイルは変更しないほうがいいので、書き方のみ記載
         });
     }
 

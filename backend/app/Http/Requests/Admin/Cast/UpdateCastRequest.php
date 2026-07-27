@@ -14,11 +14,9 @@ class UpdateCastRequest extends FormRequest
 
     public function rules(): array
     {
-        // 編集対象の出演者のnameを取得
-        $name = $this->route('cast');
         return [
-            // ignoreは編集時の例外、名前を更新せずに保存してもバリデーションエラーが発生しないようにする
-            'name' => ['required', 'string', 'max:255', Rule::unique('casts', 'name')->ignore($name)],
+            // ルートから出演者を取得し、nameを検証。ignoreは編集時の例外、名前を更新せずに保存してもバリデーションエラーが発生しないようにする
+            'name' => ['required', 'string', 'max:255', Rule::unique('casts', 'name')->ignore($this->route('cast'))],
             'gender' => ['nullable', 'integer'],
             'birthday' => ['nullable', 'date'],
             'occupation_id' => ['nullable', 'integer', 'exists:occupations,id'],
