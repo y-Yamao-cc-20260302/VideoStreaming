@@ -76,7 +76,7 @@ class StoreCastRequestTest extends TestCase
         $this->withoutExceptionHandling();
         // 管理者を取得
         $admin = Admin::where('name', 'admin')->first();
-        $this->expectExceptionMessage('The name field must not be greater than 255 characters.');
+        $this->expectExceptionMessage('名前は255文字以内で入力してください[ERR-CAST-005]');
         // コントローラを直接呼ばず、Laravelのpostで送信する。postの場合は第二引数をqueryParamsにする
         $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション

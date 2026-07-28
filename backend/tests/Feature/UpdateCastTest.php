@@ -137,17 +137,13 @@ class UpdateCastTest extends TestCase
         $assertDatabaseHas['picture_path'] = $this->dummyPicturePath;
         // 画面遷移のため、引数$updateNameから、データを取得する
         $cast = Cast::where('name', $updateName)->first();
-
+        // 登録に失敗し、ERR-CAST-007のエラーメッセージを出力することを確認する
+        $this->expectExceptionMessage('入力された名前は登録済みです[ERR-CAST-007]');
         // コントローラを直接呼ばず、Laravelのpatchで送信する。patchの場合は第二引数をqueryParamsにする
-        $response = $this->actingAs($admin, 'admin')
+        $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
             ->followingRedirects()
             ->patch("admin/casts/{$cast->id}", $queryParams);
-
-        // 通信ができたかどうか(登録に失敗し、管理画面に戻るのでステータスは200)
-        $response->assertStatus(200);
-        // DBの内容が期待結果(更新失敗を引き起こすためのデータ)と一致しているかを検証(更新前の値を引数にとり、更新されていないことを確認)
-        $this->assertDatabaseHas('casts', $assertDatabaseHas);
     }
 
     // データプロバイダーはstaticとarrayが必須

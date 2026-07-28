@@ -84,7 +84,7 @@ class UpdateCastRequestTest extends TestCase
         $cast = Cast::latest()->first();
 
         // バリデーションエラーが出ることの確認テスト
-        $this->expectExceptionMessage('The name field must not be greater than 255 characters.');
+        $this->expectExceptionMessage('名前は255文字以内で入力してください[ERR-CAST-005]');
         // コントローラを直接呼ばず、Laravelのpatchで送信する。patchの場合は第二引数をqueryParamsにする
         $this->actingAs($admin, 'admin')
             // htmlコードも一緒に出力され、エラーメッセージがわかるオプション
