@@ -114,3 +114,21 @@ export interface AuthResponse {
   expires_in: number
   user: User
 }
+
+export interface CastSummary{
+  id: string;
+  name: string;
+  picture_path: string;
+}
+
+export interface CastDetail extends CastSummary {
+  birthday: string
+  occupation_id: number
+  is_favored: boolean
+}
+
+export interface Occupation {
+  id: number
+  name: string
+  slug: string
+}

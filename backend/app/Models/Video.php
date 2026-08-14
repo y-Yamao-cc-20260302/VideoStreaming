@@ -59,4 +59,9 @@ class Video extends Model
     {
         return $query->where('is_published', true);
     }
+
+    public function castvideo(): BelongsToMany
+    {
+        return $this->belongsToMany(Cast::class, 'cast_videos' . 'video_id', 'cast_id');
+    }
 }

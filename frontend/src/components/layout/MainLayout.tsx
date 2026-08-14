@@ -45,6 +45,9 @@ export default function MainLayout() {
             <NavLink to="/notices" className={({ isActive }) => (isActive ? 'font-semibold' : '')}>
               お知らせ
             </NavLink>
+            <Link to="/casts" className={({ isActive }) => (isActive ? 'font-semibold' : '')}>
+                  出演者一覧
+            </Link>
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <Link to="/my/profile" className="text-gray-700">

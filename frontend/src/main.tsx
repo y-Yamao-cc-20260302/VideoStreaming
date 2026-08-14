@@ -22,6 +22,8 @@ import FavoritesPage from './pages/my/FavoritesPage'
 import HistoryPage from './pages/my/HistoryPage'
 import SubscriptionPage from './pages/my/SubscriptionPage'
 import PaymentHistoriesPage from './pages/my/PaymentHistoriesPage'
+import CastListPage from './pages/casts/CastListPage'
+import CastDetailPage from './pages/casts/CastDetailPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +48,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="/plans" element={<PlansPage />} />
               <Route path="/notices" element={<NoticeListPage />} />
               <Route path="/notices/:id" element={<NoticeDetailPage />} />
+              <Route path="/casts" element={<CastListPage />} />
+              <Route path="/casts/:id" element={<CastDetailPage />} />
 
               <Route element={<RequireAuth />}>
                 <Route path="/my" element={<MyPageLayout />}>
