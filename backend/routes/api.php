@@ -83,7 +83,5 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('payment-histories', [PaymentHistoryController::class, 'index']);
 
-    Route::get('castfavorites', [CastFavoriteController::class, 'index']);
-    Route::post('castfavorites', [CastFavoriteController::class, 'store']);
-    Route::delete('castfavorites/{cast_id}', [CastFavoriteController::class, 'destroy'])->whereNumber('cast_id');
+    Route::post('/casts/{cast_id}/favorite', [CastFavoriteController::class, 'favorite']);
 });

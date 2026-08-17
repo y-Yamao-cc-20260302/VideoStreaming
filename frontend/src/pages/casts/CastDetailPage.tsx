@@ -42,10 +42,12 @@ export default function CastDetailPage() {
     }
     if (!cast) return
     if (cast.is_favored) {
-      await castfavoritesApi.remove(cast.id)
+      // 登録済みなら非登録状態にする
+      await castfavoritesApi.favorite(cast.id)
       setCast({ ...cast, is_favored: false })
     } else {
-      await castfavoritesApi.add(cast.id)
+      // 非登録状態なら登録状態にする
+      await castfavoritesApi.favorite(cast.id)
       setCast({ ...cast, is_favored: true })
     }
   }
