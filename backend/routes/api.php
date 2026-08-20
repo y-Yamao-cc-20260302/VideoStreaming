@@ -83,5 +83,5 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('payment-histories', [PaymentHistoryController::class, 'index']);
 
-    Route::post('/casts/{cast_id}/favorite', [CastFavoriteController::class, 'favorite']);
+    Route::post('/casts/{cast_id}/favorite', [CastFavoriteController::class, 'favorite'])->whereNumber('cast_id');
 });

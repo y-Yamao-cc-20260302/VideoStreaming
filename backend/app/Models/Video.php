@@ -62,6 +62,6 @@ class Video extends Model
 
     public function castvideo(): BelongsToMany
     {
-        return $this->belongsToMany(Cast::class, 'cast_videos' . 'video_id', 'cast_id');
+        return $this->belongsToMany(Cast::class, 'cast_videos', 'video_id', 'cast_id');
     }
 }

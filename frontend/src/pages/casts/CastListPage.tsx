@@ -12,7 +12,6 @@ import type {Paginated,CastSummary,Occupation} from '../../types'
 
 export default function CastListPage() {
     const [searchParams, setSearchParams] = useSearchParams()
-    // const [casts,setCasts] = useState<Cast[]>([])
     const [loading,setLoading] = useState<boolean>(true)
     // setResultの値に変更があれば、useStateが動きresultに値がsetされる。
     const [result,setResult] = useState<Paginated<CastSummary>| null>(null)
@@ -25,36 +24,62 @@ export default function CastListPage() {
     // ページ番号を取得
     const page = Number(searchParams.get('page') ?? 1)
 
+    //  URLから現在の確定されたキーワードを取得
+    const keyword = searchParams.get('keyword') ?? '';
+    //  フォーム入力中のキーワードを取得（フォームに反映させるため、初期値はURLの値）
+    const [inputKeyword, setInputKeyword] = useState(keyword);
+    //  ブラウザの「戻る・進む」などでURLが変わった時に入力欄も同期させる
+      useEffect(() => {
+        setInputKeyword(keyword);
+      }, [keyword]);
+
+    // 職業プルダウンの設定
     useEffect(()=>{
       occupationsApi.list().then((r)=>setOccupations(r.data.data)).catch(()=>{})
     },[])
 
+    // URLの更新
     const update = (patch: Record<string, string | number>) => {
-    const next = new URLSearchParams(searchParams)
-      for (const [k, v] of Object.entries(patch)) {
-        if (v === '' || v === undefined || v === null) next.delete(k)
-        else next.set(k, String(v))
-      }
-    if (!('page' in patch)) next.delete('page')
-    setSearchParams(next)
+      const next = new URLSearchParams(searchParams)
+        for (const [k, v] of Object.entries(patch)) {
+          if (v === '' || v === undefined || v === null) next.delete(k)
+          else next.set(k, String(v))
+        }
+      if (!('page' in patch)) next.delete('page')
+      setSearchParams(next)
     }
 
-    // URLの既存の 'keyword' を初期値にする（なければ空文字）
-    const [keyword, setKeyword] = useState(searchParams.get('keyword') || '')
-    // handleSubmitが呼び出されたときに処理を開始する
+    // フォームに文字が入力された時の処理
+    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+      const target = e.currentTarget;
+      const value = target.value;
+      setInputKeyword(value); 
+      if (value.length > 255){
+        target.setCustomValidity('255文字以内で入力してください');
+      } else {
+        target.setCustomValidity('');  
+      }
+    }
+
+    // Enterが押されたときの処理
     const handleSubmit = (e: React.FormEvent) => {
       // ページ再読み込みを防止
       e.preventDefault()
+      const keyword = inputKeyword.trim();
       // keywordの条件分岐処理
-      if (keyword.trim()) {
-        searchParams.set('keyword', keyword.trim()) // 入力があれば更新または追加
+      if (keyword) {
+        // 255文字を超えるならupdateしないようにする
+        if (keyword.length > 255) {
+          return; 
+        }
+        // 入力があれば更新または追加
       } else {
         searchParams.delete('keyword') // 空文字ならkeywordパラメータを削除
       }
-      // 関数内で触るときはこの書き方'代入先変数名':代入する変数
       update({'keyword':keyword})
     }
 
+    // 各検索条件の更新に伴いAPIを発火させる
     useEffect(()=>{
         setLoading(true)
         // r(レスポンス)が届いたら、setResultを実行。
@@ -77,14 +102,10 @@ export default function CastListPage() {
           <form onSubmit={handleSubmit} className="flex-1 max-w-md">
             <input
               type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              value={inputKeyword}
+              onChange={handleChange}
               // 255文字までの正規表現(maxlengthと違い、バリデーションエラー表示がされる)
               pattern=".{0,255}"
-              // エラー時のカスタムメッセージ
-              onInvalid={(e) => e.target.setCustomValidity('255文字以内で入力してください')}
-              // 入力し直したらエラーをクリア
-              onInput={(e) => e.target.setCustomValidity('')}
               placeholder="出演者を検索"
               className="w-full border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-gray-900"
             />

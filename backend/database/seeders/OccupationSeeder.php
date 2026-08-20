@@ -19,7 +19,11 @@ class OccupationSeeder extends Seeder
         ];
 
         foreach ($occupations as $occupation) {
-            Occupation::updateOrCreate($occupation);
+            Occupation::updateOrCreate(
+                // カラム追加に伴い、既存DB更新不整合を防ぐため、nameの二重登録チェックを追加
+                ['name' => $occupation['name']],
+                $occupation
+            );
         }
     }
 }

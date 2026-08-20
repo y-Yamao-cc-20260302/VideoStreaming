@@ -116,14 +116,15 @@ export interface AuthResponse {
 }
 
 export interface CastSummary{
-  id: string;
+  id: number;
   name: string;
   picture_path: string;
 }
 
 export interface CastDetail extends CastSummary {
+  gender: number
   birthday: string
-  occupation_id: number
+  occupation: Occupation
   is_favored: boolean
 }
 

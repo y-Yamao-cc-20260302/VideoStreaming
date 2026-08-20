@@ -7,7 +7,7 @@ import type { CastDetail } from '../../types'
 import { formatDate} from '../../utils/format'
 
 import VideoGrid from '../../components/video/VideoGrid'
-import type { VideoSummary } from '../../types'
+import type { Paginated,VideoSummary } from '../../types'
 
 export default function CastDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -16,24 +16,30 @@ export default function CastDetailPage() {
   const navigate = useNavigate()
   const [cast, setCast] = useState<CastDetail | null>(null)
   const [loading, setLoading] = useState(true)
-  const [result, setResult] = useState<VideoSummary | null>(null)
+  const [result, setResult] = useState<Paginated<VideoSummary> | null>(null)
+  
+  // 出演者情報取得と出演作品取得のAPIを同時に実行
   useEffect(() => {
-    setLoading(true)
-    castsApi
-      .show(castId)
-      .then((r) => setCast(r.data))
-      .finally(() => setLoading(false))
-  }, [castId])
-
-
-  useEffect(() => {
-    setLoading(true)
-    castsApi
-      .video(castId)
-      .then((r) => setResult(r.data))
-      .finally(() => setLoading(false))
-  }, [])
-
+    const fetchAllData = async () => {
+      setLoading(true)
+      try{
+        // 2つのAPIを同時に呼び、両方終わるのを待つ
+        const[casts,videos]=await Promise.all([
+          castsApi.show(castId),
+          castsApi.video(castId),
+        ]);
+        // 完了後、それぞれのデータをセット
+        setCast(casts.data);
+        setResult(videos.data);
+      }catch(err){
+        console.error('データ取得失敗:', err);
+      }finally{
+        // 両方終わったらローディング解除
+        setLoading(false)
+      }
+    }
+    fetchAllData();
+  }, []);
   
   const toggleCastFavorite = async () => {
     if (!isAuthenticated) {
@@ -62,7 +68,7 @@ export default function CastDetailPage() {
   };
 
   if (loading) return <p className="text-sm text-gray-500">読み込み中...</p>
-  if (!cast) return <p className="text-sm text-gray-500">作品が見つかりませんでした</p>
+  if (!cast) return <p className="text-sm text-gray-500">出演者が見つかりませんでした</p>
 
   return (
     <div className="gap-4">
@@ -118,7 +124,6 @@ export default function CastDetailPage() {
       <p>出演作品一覧</p>
       <div className="h-1/2">
             <section className="col-span-12 md:col-span-9">
-              {loading && <p className="text-sm text-gray-500">読み込み中...</p>}
               {result && (
                 <>
                   <VideoGrid videos={result.data} />

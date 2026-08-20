@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { Paginated, CastSummary, CastDetail } from '../types'
+import type { CastDetail } from '../types'
 
 export const castfavoritesApi = {
   favorite:(cast_id:number) =>

@@ -6,9 +6,9 @@ use App\Models\Cast;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CastSummaryResource;
 use App\Http\Resources\CastDetailResource;
+use App\Http\Requests\Api\Cast\SearchCastRequest;
 
 // リクエスト処理
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 //作品取得
@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CastController extends Controller
 {
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(SearchCastRequest $request): AnonymousResourceCollection
     {
         $query = Cast::publish()->with(['occupation']);
         if ($slug = $request->string('occupation')->toString()) {
@@ -44,7 +44,7 @@ class CastController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $cast = Cast::with('occupation')->findOrFail($id);
+        $cast = Cast::publish()->with('occupation')->findOrFail($id);
 
         if ($user = auth('api')->user()) {
             $cast->is_favored = $cast->castfavorites()->where('user_id', $user->id)->exists();
@@ -57,8 +57,8 @@ class CastController extends Controller
 
     public function video(int $id)
     {
-        $cast = Cast::findOrFail($id);
-        $videos = $cast->video;
+        $cast = Cast::publish()->findOrFail($id);
+        $videos = $cast->video()->published()->get();
 
         return VideoSummaryResource::collection($videos);
     }
