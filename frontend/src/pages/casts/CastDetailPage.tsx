@@ -39,7 +39,7 @@ export default function CastDetailPage() {
       }
     }
     fetchAllData();
-  }, []);
+  }, [castId]);
   
   const toggleCastFavorite = async () => {
     if (!isAuthenticated) {
