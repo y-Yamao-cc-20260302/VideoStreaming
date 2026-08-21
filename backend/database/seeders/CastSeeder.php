@@ -2,15 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Cast;
 
 class CastSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         $casts = [
@@ -22,7 +19,6 @@ class CastSeeder extends Seeder
                 'picture_path' => null,
                 'is_publish' => true,
             ],
-            
             [
                 'name' => '山下次郎',
                 'gender' => 2,
@@ -31,11 +27,90 @@ class CastSeeder extends Seeder
                 'picture_path' => null,
                 'is_publish' => true,
             ],
+            [
+                'name' => '吉田三郎',
+                'gender' => 1,
+                'birthday' => '1120-01-01',
+                'occupation_id' => 3,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => '田中史郎',
+                'gender' => 1,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 4,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => '田中一花',
+                'gender' => 2,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 4,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => '山下仁香',
+                'gender' => 2,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 4,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => '吉田美香',
+                'gender' => 2,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 4,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => '田中亭',
+                'gender' => 1,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 6,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => 'Cassy',
+                'gender' => 2,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 3,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => 'John',
+                'gender' => 1,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 2,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => 'Java',
+                'gender' => 1,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 6,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
+            [
+                'name' => 'React',
+                'gender' => 1,
+                'birthday' => '1110-01-01',
+                'occupation_id' => 5,
+                'picture_path' => null,
+                'is_publish' => true,
+            ],
         ];
-        
+
         foreach ($casts as $cast) {
             Cast::updateOrCreate($cast);
         }
-
     }
 }

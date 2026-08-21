@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Occupation extends Model
 {
     use HasFactory;
-    //
+    protected $fillable = ['name', 'slug'];
 }

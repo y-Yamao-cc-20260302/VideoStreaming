@@ -1,5 +1,9 @@
 <?php
 
+// 使用するコントローラのuse文を追加する
+use App\Http\Controllers\Api\CastController;
+use App\Http\Controllers\Api\OccupationController;
+use App\Http\Controllers\Api\CastFavoriteController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\FavoriteController;
@@ -18,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 | 認証不要
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
@@ -36,6 +41,13 @@ Route::get('subscription-plans', [SubscriptionPlanController::class, 'index']);
 
 Route::get('notices', [NoticeController::class, 'index']);
 Route::get('notices/{id}', [NoticeController::class, 'show'])->whereNumber('id');
+
+// アクセスするためのルートを追記する
+Route::get('casts', [CastController::class, 'index']);
+Route::get('casts/{id}', [CastController::class, 'show'])->whereNumber('id');
+Route::get('casts/{id}/video', [CastController::class, 'video'])->whereNumber('id');
+// 職業データにアクセスするためのルートを追記する
+Route::get('occupations', [OccupationController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
@@ -70,4 +82,6 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('subscriptions/current', [SubscriptionController::class, 'destroy']);
 
     Route::get('payment-histories', [PaymentHistoryController::class, 'index']);
+
+    Route::post('/casts/{cast_id}/favorite', [CastFavoriteController::class, 'favorite'])->whereNumber('cast_id');
 });

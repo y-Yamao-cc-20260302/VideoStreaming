@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             NoticeSeeder::class,
             OccupationSeeder::class,
             CastSeeder::class,
+            CastVideoSeeder::class,
         ]);
     }
 }

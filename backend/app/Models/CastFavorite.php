@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CastFavorite extends Model
 {
-    //
+    protected $fillable = ['cast_id', 'user_id'];
 }
